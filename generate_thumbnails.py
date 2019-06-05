@@ -1,5 +1,6 @@
 import os
 import tempfile
+from pathlib import Path
 
 from PIL import Image
 from google.cloud import storage
@@ -29,7 +30,7 @@ def main(event, context):
 
 
 def get_thumbnail_name(image_name):
-    return f"{image_name.split('.')[0]}{THUMBNAIL_SUFFIX}"
+    return f'{Path(image_name).stem}.jpg'
 
 
 def generate_thumbnail(image_file_name, thumbnail_file_name):
