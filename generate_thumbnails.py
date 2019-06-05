@@ -30,7 +30,7 @@ def main(event, context):
 
 
 def get_thumbnail_name(image_name):
-    return f'{Path(image_name).stem}.jpg'
+    return f'{Path(image_name).stem}{THUMBNAIL_SUFFIX}.jpg'
 
 
 def generate_thumbnail(image_file_name, thumbnail_file_name):
