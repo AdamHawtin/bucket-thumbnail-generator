@@ -4,7 +4,7 @@ import tempfile
 from PIL import Image
 from google.cloud import storage
 
-THUMBNAIL_SIZE = os.getenv('THUMBNAIL_SIZE', 128)
+THUMBNAIL_SIZE = int(os.getenv('THUMBNAIL_SIZE', '128'))
 THUMBNAIL_MAX_DIM = THUMBNAIL_SIZE, THUMBNAIL_SIZE
 THUMBNAIL_SUFFIX = '_thumb.jpg'
 
