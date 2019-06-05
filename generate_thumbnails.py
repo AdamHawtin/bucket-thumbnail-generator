@@ -21,7 +21,7 @@ def main(event, context):
     with tempfile.NamedTemporaryFile() as temp_image_file, tempfile.NamedTemporaryFile() as temp_thumb_file:
         get_image_file(event, temp_image_file.name, bucket)
         generate_thumbnail(temp_image_file.name, temp_thumb_file.name)
-        bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name, context_type='image/jpeg')
+        bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name, content_type='image/jpeg')
 
 
 def get_thumbnail_name(image_name):
