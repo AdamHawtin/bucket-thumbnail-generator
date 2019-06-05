@@ -4,6 +4,7 @@ from pathlib import Path
 
 from PIL import Image
 from google.cloud import storage
+from retrying import retry
 
 THUMBNAIL_SIZE = int(os.getenv('THUMBNAIL_SIZE', '128'))
 THUMBNAIL_MAX_DIM = THUMBNAIL_SIZE, THUMBNAIL_SIZE
@@ -26,7 +27,7 @@ def main(event, context):
     with tempfile.NamedTemporaryFile() as temp_image_file, tempfile.NamedTemporaryFile() as temp_thumb_file:
         get_image_file(event, temp_image_file.name, bucket)
         generate_thumbnail(temp_image_file.name, temp_thumb_file.name)
-        bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name, content_type='image/jpeg')
+        upload_thumbnail_to_bucket(bucket, event, temp_thumb_file)
 
 
 def get_thumbnail_name(image_name):
@@ -39,6 +40,12 @@ def generate_thumbnail(image_file_name, thumbnail_file_name):
     image.save(thumbnail_file_name, format='JPEG')
 
 
+@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
+def upload_thumbnail_to_bucket(bucket, event, temp_thumb_file):
+    bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name, content_type='image/jpeg')
+
+
+@retry(wait_exponential_multiplier=1000, wait_exponential_max=10000)
 def get_image_file(event, destination_filename, bucket):
     blob = bucket.get_blob(event['name'])
     blob.download_to_filename(destination_filename)
