@@ -1,10 +1,13 @@
+import os
 import tempfile
+from pathlib import Path
 
 from PIL import Image
 from google.cloud import storage
 
-THUMB_SIZE = 128, 128
-THUMB_SUFFIX = '_thumb.jpg'
+THUMBNAIL_SIZE = int(os.getenv('THUMBNAIL_SIZE', '128'))
+THUMBNAIL_MAX_DIM = THUMBNAIL_SIZE, THUMBNAIL_SIZE
+THUMBNAIL_SUFFIX = f'_thumb{THUMBNAIL_SIZE}.jpg'
 
 
 def main(event, context):
@@ -13,7 +16,7 @@ def main(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    if event['contentType'].split('/')[0] != 'image' or THUMB_SUFFIX in event['name']:
+    if event['contentType'].split('/')[0] != 'image' or THUMBNAIL_SUFFIX in event['name']:
         # Ignore non-images and thumbnails
         return
     print(event)
@@ -27,12 +30,12 @@ def main(event, context):
 
 
 def get_thumbnail_name(image_name):
-    return f"{image_name.split('.')[0]}{THUMB_SUFFIX}"
+    return f'{Path(image_name).stem}{THUMBNAIL_SUFFIX}'
 
 
 def generate_thumbnail(image_file_name, thumbnail_file_name):
     image = Image.open(image_file_name)
-    image.thumbnail(THUMB_SIZE)
+    image.thumbnail(THUMBNAIL_MAX_DIM)
     image.save(thumbnail_file_name, format='JPEG')
 
 
