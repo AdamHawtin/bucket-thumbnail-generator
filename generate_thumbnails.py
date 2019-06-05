@@ -1,9 +1,11 @@
+import os
 import tempfile
 
 from PIL import Image
 from google.cloud import storage
 
-THUMB_SIZE = 128, 128
+THUMB_SIZE = os.getenv('THUMBNAIL_SIZE', 128)
+THUMBNAIL_MAX_DIM = THUMB_SIZE, THUMB_SIZE
 THUMB_SUFFIX = '_thumb.jpg'
 
 
@@ -32,7 +34,7 @@ def get_thumbnail_name(image_name):
 
 def generate_thumbnail(image_file_name, thumbnail_file_name):
     image = Image.open(image_file_name)
-    image.thumbnail(THUMB_SIZE)
+    image.thumbnail(THUMBNAIL_MAX_DIM)
     image.save(thumbnail_file_name, format='JPEG')
 
 
