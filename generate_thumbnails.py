@@ -4,6 +4,7 @@ from PIL import Image
 from google.cloud import storage
 
 THUMB_SIZE = 128, 128
+THUMB_SUFFIX = '_thumb.jpg'
 
 
 def main(event, context):
@@ -12,20 +13,21 @@ def main(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
+    if event['contentType'].split('/')[0] != 'image' or THUMB_SUFFIX in event['name']:
+        # Ignore non-images and thumbnails
+        return
     print(event)
     print(context)
-    if event['contentType'].split('/')[0] != 'image':
-        return
     client = storage.Client()
     bucket = client.get_bucket(event['bucket'])
     with tempfile.NamedTemporaryFile() as temp_image_file, tempfile.NamedTemporaryFile() as temp_thumb_file:
         get_image_file(event, temp_image_file.name, bucket)
         generate_thumbnail(temp_image_file.name, temp_thumb_file.name)
-        bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name)
+        bucket.blob(get_thumbnail_name(event['name'])).upload_from_filename(temp_thumb_file.name, content_type='image/jpeg')
 
 
 def get_thumbnail_name(image_name):
-    return f"{image_name.split('.')[0]}_thumb.{image_name.split('.')[1]}"
+    return f"{image_name.split('.')[0]}{THUMB_SUFFIX}"
 
 
 def generate_thumbnail(image_file_name, thumbnail_file_name):
