@@ -6,7 +6,7 @@ from google.cloud import storage
 
 THUMBNAIL_SIZE = int(os.getenv('THUMBNAIL_SIZE', '128'))
 THUMBNAIL_MAX_DIM = THUMBNAIL_SIZE, THUMBNAIL_SIZE
-THUMBNAIL_SUFFIX = '_thumb.jpg'
+THUMBNAIL_SUFFIX = f'_thumb{THUMBNAIL_SIZE}.jpg'
 
 
 def main(event, context):
