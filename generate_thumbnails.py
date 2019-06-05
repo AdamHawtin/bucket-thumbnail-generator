@@ -16,7 +16,7 @@ def main(event, context):
          event (dict): Event payload.
          context (google.cloud.functions.Context): Metadata for the event.
     """
-    if event['contentType'].split('/')[0] != 'image' or THUMBNAIL_SUFFIX in event['name']:
+    if not event['contentType'].startswith('image') or THUMBNAIL_SUFFIX in event['name']:
         # Ignore non-images and thumbnails
         return
     print(event)
