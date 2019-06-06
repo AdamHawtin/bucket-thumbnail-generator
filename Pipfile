@@ -9,6 +9,8 @@ verify_ssl = true
 pillow = "*"
 google-cloud-storage = "*"
 retrying = "*"
+pytest = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.7"
